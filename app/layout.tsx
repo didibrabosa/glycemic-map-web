@@ -2,7 +2,7 @@ import "./globals.css";
 
 export const metadata = {
   title: "Glycemic Map",
-  description: "Controle e registro de medições de glicemia",
+  description: "Control and recording of glycemie measurements",
 };
 
 export default function RootLayout({
