@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { GlycemiaFormData, GlycemiaRegister } from '../interfaces/glycemia-register';
-import { getGlycemicResult, generateId } from '../utils/glycemia-utils';
+import { createGlycemia } from '../../services/glycemia-api';
 
 interface GlycemiaFormProps {
   onSubmit: (register: GlycemiaRegister) => void;
@@ -13,43 +13,33 @@ export default function GlycemiaForm({ onSubmit }: GlycemiaFormProps) {
     glycemia: '',
     date: '',
     hour: '',
-    observations: ''
+    meal: '',
+    observation: ''
   });
+
   const [showSuccess, setShowSuccess] = useState(false);
 
   const handleInputChange = (field: keyof GlycemiaFormData, value: string) => {
     setForm(prev => ({ ...prev, [field]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (form.glycemia && form.date && form.hour) {
-      const glycemiaValue = parseInt(form.glycemia);
-      const result = getGlycemicResult(glycemiaValue);
-      
-      const newRegister: GlycemiaRegister = {
-        id: generateId(),
-        glycemia: form.glycemia,
-        date: form.date,
-        hour: form.hour,
-        observations: form.observations,
-        result,
-        timestamp: Date.now()
-      };
-      
-      onSubmit(newRegister);
-      
-      setForm({
-        glycemia: '',
-        date: '',
-        hour: '',
-        observations: ''
-      });
-      
-      setShowSuccess(true);
-      setTimeout(() => setShowSuccess(false), 3000);
-    }
+
+    const newRegister = await createGlycemia(form);
+
+    onSubmit(newRegister);
+
+    setForm({
+      glycemia: '',
+      date: '',
+      hour: '',
+      meal: '',
+      observation: ''
+    });
+
+    setShowSuccess(true);
+    setTimeout(() => setShowSuccess(false), 3000);
   };
 
   return (
@@ -74,7 +64,7 @@ export default function GlycemiaForm({ onSubmit }: GlycemiaFormProps) {
           className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600"
           placeholder="e.g., 120"
           min="20"
-          max="800"
+          max="999"
           aria-label="Glycemia level in milligrams per deciliter"
           title="Enter your glycemia level"
           required
@@ -113,18 +103,34 @@ export default function GlycemiaForm({ onSubmit }: GlycemiaFormProps) {
         />
       </div>
       
+      <div className="mb-4">
+        <label htmlFor="meal" className="block text-sm font-medium mb-2">
+          Meal
+        </label>
+        <input
+          type="text"
+          id="meal"
+          value={form.meal}
+          onChange={(e) => handleInputChange('meal', e.target.value)}
+          className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600"
+          placeholder="e.g., Dinner, Breakfast, Fasting..."
+          maxLength={50}
+          required
+        />
+      </div>
+
       <div className="mb-6">
-        <label htmlFor="observations" className="block text-sm font-medium mb-2">
-          Observations
+        <label htmlFor="observation" className="block text-sm font-medium mb-2">
+          Observation
         </label>
         <textarea
-          id="observations"
-          value={form.observations}
-          onChange={(e) => handleInputChange('observations', e.target.value)}
+          id="observation"
+          value={form.observation}
+          onChange={(e) => handleInputChange('observation', e.target.value)}
           className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600"
           placeholder="Optional notes about this measurement..."
           rows={3}
-          aria-label="Additional observations about the glycemia measurement"
+          aria-label="Additional observation about the glycemia measurement"
           title="Enter the observation glycemia measurement"
         />
       </div>
