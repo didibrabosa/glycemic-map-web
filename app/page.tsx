@@ -18,7 +18,7 @@ export default function Home() {
     loadData();
   }, []);
 
-  
+
   const handleAddRegister = (newRegister: GlycemiaRegister) => {
     setRegisters(prev => [...prev, newRegister]);
   };
@@ -26,6 +26,7 @@ export default function Home() {
   const handleDeleteRegister = async (glycemiaId: number) => {
     await deleteGlycemia(glycemiaId);
     setRegisters(prev => prev.filter(register => register.glycemiaId !== glycemiaId));
+
   };
 
   return (
