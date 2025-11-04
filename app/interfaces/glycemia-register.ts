@@ -1,18 +1,18 @@
-export type GlycemiaResult = 'Hypoglycemia' | 'Normal' | 'Hyperglycemia';
+export type GlycemiaResult = "Hypoglycemia" | "Normal" | "Hyperglycemia";
 
 export interface GlycemiaRegister {
-  id: string;
-  glycemia: string;
-  date: string;
-  hour: string;
-  observations?: string;
+  glycemiaId: number;
+  glycemia: number;
+  meal: string;
+  observation?: string;
   result: GlycemiaResult;
-  timestamp: number;
+  measuredAt: string;
 }
 
 export interface GlycemiaFormData {
   glycemia: string;
   date: string;
   hour: string;
-  observations: string;
+  meal: string;
+  observation?: string;
 }

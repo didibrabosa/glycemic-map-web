@@ -3,9 +3,16 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    container_name: glycemic_map_web
     volumes:
       - .:/usr/src/app
       - /usr/src/app/node_modules
-    expose:
-      - "3000"
+    ports:
+      - "3000:3000"
+    networks:
+      - glycemic_net
     restart: unless-stopped
+
+networks:
+  glycemic_net:
+    external: true
