@@ -19,7 +19,7 @@ export default function Home() {
   }, []);
 
   const handleAddRegister = (newRegister: GlycemiaRegister) => {
-    setRegisters((prev) => [...prev, newRegister]);
+    setRegisters((previousRegisters) => [newRegister, ...previousRegisters]);
   };
 
   const handleDeleteRegister = async (glycemiaId: number) => {
