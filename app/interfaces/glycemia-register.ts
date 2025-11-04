@@ -1,4 +1,4 @@
-export type GlycemiaResult = 'Hypoglycemia' | 'Normal' | 'Hyperglycemia';
+export type GlycemiaResult = "Hypoglycemia" | "Normal" | "Hyperglycemia";
 
 export interface GlycemiaRegister {
   glycemiaId: number;
