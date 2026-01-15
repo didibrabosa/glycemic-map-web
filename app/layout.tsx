@@ -1,4 +1,6 @@
+import { ClerkProvider } from "@clerk/nextjs";
 import "./globals.css";
+import Header from "./components/Header";
 
 export const metadata = {
   title: "Glycemic Map",
@@ -11,8 +13,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en-US">
-      <body>{children}</body>
-    </html>
+    <ClerkProvider
+      publishableKey={process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}
+    >
+      <html lang="en-US">
+        <body>
+          <Header />
+          {children}
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }
