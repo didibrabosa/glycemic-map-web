@@ -3,12 +3,16 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: ${NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}
     container_name: glycemic_map_web
     volumes:
       - .:/usr/src/app
       - /usr/src/app/node_modules
     ports:
       - "3000:3000"
+    env_file:
+      - .env
     networks:
       - glycemic_net
     restart: unless-stopped

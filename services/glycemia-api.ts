@@ -1,3 +1,6 @@
+"use server";
+
+import { auth } from "@clerk/nextjs/server";
 import {
   GlycemiaFormData,
   GlycemiaRegister,
@@ -5,45 +8,80 @@ import {
 
 const API_URL = process.env.NEXT_PUBLIC_GLYCEMIC_MAP_API_URL;
 
-export async function createGlycemia(
+export async function getAllGlycemiasAction(): Promise<GlycemiaRegister[]> {
+  const { getToken } = await auth();
+
+  const token = await getToken();
+
+  if (!token) {
+    throw new Error("Unauthorized");
+  }
+
+  const response = await fetch(`${API_URL}/glycemia`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    cache: "no-store",
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch glycemias");
+  }
+
+  return response.json();
+}
+
+export async function createGlycemiaAction(
   form: GlycemiaFormData,
 ): Promise<GlycemiaRegister> {
-  const mesureAt = new Date(`${form.date}T${form.hour}:00`);
+  const { getToken } = await auth();
 
-  const payload = {
-    glycemia: Number(form.glycemia),
-    meal: form.meal,
-    observation: form.observation || null,
-    mesureAt: mesureAt.toISOString(),
-  };
+  const token = await getToken();
+
+  if (!token) {
+    throw new Error("Unauthorized");
+  }
+
+  const measuredAt = new Date(`${form.date}T${form.hour}:00`);
 
   const response = await fetch(`${API_URL}/glycemia`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload),
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      glycemia: Number(form.glycemia),
+      meal: form.meal,
+      observation: form.observation ?? null,
+      measuredAt: measuredAt.toISOString(),
+    }),
   });
 
   if (!response.ok) {
-    throw new Error("Failed to create glycemia record");
+    throw new Error("Failed to create glycemia");
   }
 
   return response.json();
 }
 
-export async function getAllGlycemias(): Promise<GlycemiaRegister[]> {
-  const response = await fetch(`${API_URL}/glycemia`, { method: "GET" });
+export async function deleteGlycemiaAction(id: number) {
+  const { getToken } = await auth();
 
-  if (!response.ok) {
-    throw new Error("Failed to get all glycemias records");
+  const token = await getToken();
+
+  if (!token) {
+    throw new Error("Unauthorized");
   }
 
-  return response.json();
-}
-
-export async function deleteGlycemia(glycemiaId: number): Promise<void> {
-  const response = await fetch(`${API_URL}/glycemia/${glycemiaId}`, {
+  const response = await fetch(`${API_URL}/glycemia/${id}`, {
     method: "DELETE",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
   });
 
-  if (!response.ok) throw new Error("Failed to delete glycemia");
+  if (!response.ok) {
+    throw new Error("Failed to delete glycemia");
+  }
 }
